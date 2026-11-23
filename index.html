@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>infovore · 信息动物测试 / What's Your Information Animal?</title>
+<meta name="description" content="32 道情境题，测测你是哪种信息动物。32 scenario questions — find out what kind of information animal you are.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">infovore</div>
+  <div class="lang-toggle" role="group" aria-label="Language">
+    <button type="button" id="lang-zh">中文</button>
+    <button type="button" id="lang-en">EN</button>
+  </div>
+</header>
+
+<main id="app">
+  <section id="view-intro" class="view"></section>
+  <section id="view-quiz" class="view" hidden></section>
+  <section id="view-teaser" class="view" hidden></section>
+  <section id="view-result" class="view" hidden></section>
+</main>
+
+<footer class="site-footer">
+  <span>infovore</span>
+  <span class="foot-sep">·</span>
+  <span data-foot-note>你的茧，只存在你自己的浏览器里 / Your bubble lives only in your browser</span>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
