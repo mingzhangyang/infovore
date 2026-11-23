@@ -81,3 +81,19 @@ Only when a real need appears, add a separate standalone Worker — the static s
 | `test.mjs` | `node test.mjs`: structure/bilingual completeness checks, a 2000-run Monte Carlo, and a targeted Frog Scholar answer set |
 | `SPEC.md` | The design spec, verbatim (single source of truth for content and scoring) |
 | `wrangler.toml` | Cloudflare Pages config |
+
+## 动物插画 / Animal illustrations
+
+每只动物一张方形插画，由 MZ 制作，放入 repo 的 `art/` 目录，命名严格对应动物 key：
+One square illustration per animal, made by MZ, placed in the repo's `art/` folder, named exactly by animal key:
+
+`art/whale.png` · `art/hummingbird.png` · `art/owl.png` · `art/fox.png` · `art/ant.png` · `art/migrant.png` · `art/frog_scholar.png` · `art/otter.png`
+
+规格 / Spec：正方形，建议 1600×1600（不小于 1000×1000），主体居中、四边留白，背景安静（卡面文字区在插画之外，不压图）。
+Square, 1600×1600 recommended (min 1000×1000), subject centered with margins, quiet background (card text lives outside the illustration).
+
+站点会自动在结果页与分享卡中加载对应插画；缺图时自动回退为排版占位，不报错、不用等齐 8 张。
+The site loads each illustration automatically on the result page and the share card; missing art falls back to a typographic placeholder — no need to wait for all 8.
+
+分享 / Sharing：结果页提供系统分享（移动端分享面板，带图带配文）、下载分享卡（1080×1350 PNG）、复制配文（中英双语模板，含动物名、稀有度、盲区与站点链接）三个动作。
+The result page offers system share (mobile share sheet, image + caption), share-card download (1080×1350 PNG), and copy-caption (bilingual template with animal, rarity, blind spot, and site URL).

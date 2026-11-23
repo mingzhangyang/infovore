@@ -88,7 +88,11 @@
       "share": {
         "blindspotLabel": "盲区",
         "rarityLabel": "稀有度 {pct}%",
-        "footer": "infovore · 信息动物测试"
+        "footer": "infovore · 信息动物测试",
+        "system": "分享到…",
+        "copyCaption": "复制配文",
+        "copied": "配文已复制",
+        "caption": "我是{animal}，只占 {pct}% 的人是这一型。我的盲区：{blind} 你是哪种信息动物？来测测：{url}"
       },
       "lang": {
         "zh": "中文",
@@ -172,7 +176,11 @@
       "share": {
         "blindspotLabel": "Blind spot",
         "rarityLabel": "Rarity {pct}%",
-        "footer": "infovore · What's Your Information Animal?"
+        "footer": "infovore · What's Your Information Animal?",
+        "system": "Share…",
+        "copyCaption": "Copy caption",
+        "copied": "Caption copied",
+        "caption": "I'm {animal} — only {pct}% of people are this type. My blind spot: {blind} What's your information animal? Take the test: {url}"
       },
       "lang": {
         "zh": "中文",

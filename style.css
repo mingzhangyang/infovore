@@ -115,3 +115,8 @@ main { max-width: 720px; margin: 0 auto; padding: 12px 20px 40px; }
   .hero h1 { font-size: 42px; }
   .q-prompt { font-size: 24px; }
 }
+
+.animal-art { max-width: 420px; margin: 18px auto 4px; }
+.animal-art img { width: 100%; height: auto; display: block; border-radius: 18px; }
+.animal-art:not(.has-art) { display: none; }
+.actions { flex-wrap: wrap; }

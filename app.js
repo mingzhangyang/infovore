@@ -227,6 +227,7 @@
 
     html += '<div class="card"><h2>' + esc(t("result.verdictTitle")) + "</h2><p>" + esc(a.verdict[loc]) + "</p></div>";
     html += '<div class="card"><h2>' + esc(t("result.strengthsTitle")) + "</h2><p>" + esc(a.strengths[loc]) + "</p></div>";
+    html += '<div class="animal-art" id="animal-art"></div>';
     html += '<div class="card blindspot"><h2>' + esc(t("result.blindspotTitle")) + "</h2><p>" + esc(a.blindspot[loc]) + "</p></div>";
 
     html += '<div class="card"><h2>' + esc(t("result.dimsTitle")) + "</h2>";
@@ -254,11 +255,19 @@
 
     html += '<div class="card"><h2>' + esc(t("result.firstStepTitle")) + "</h2><p>" + esc(a.first_step[loc]) + "</p></div>";
 
-    html += '<div class="actions"><button class="btn" id="btn-share">' + esc(t("result.share")) + "</button>" +
+    html += '<div class="actions"><button class="btn" id="btn-share-system">' + esc(t("share.system")) + "</button>" +
+      '<button class="btn secondary" id="btn-share">' + esc(t("result.share")) + "</button>" +
+      '<button class="btn secondary" id="btn-copy">' + esc(t("share.copyCaption")) + "</button>" +
       '<button class="btn secondary" id="btn-retake">' + esc(t("result.retake")) + "</button></div>";
 
     views.result.innerHTML = html;
-    document.getElementById("btn-share").addEventListener("click", function () { drawShareCard(a, r); });
+    loadArt(r.animal, function (img) {
+      var box = document.getElementById("animal-art");
+      if (box && img) { box.appendChild(img); box.classList.add("has-art"); }
+    });
+    document.getElementById("btn-share").addEventListener("click", function () { downloadCard(a, r); });
+    document.getElementById("btn-share-system").addEventListener("click", function () { systemShare(a, r); });
+    document.getElementById("btn-copy").addEventListener("click", function (ev) { copyCaption(a, r, ev.target); });
     document.getElementById("btn-retake").addEventListener("click", startQuiz);
   }
 
@@ -292,54 +301,129 @@
     return lines;
   }
 
-  function drawShareCard(a, r) {
+  /* Art convention: MZ supplies one square illustration per animal at
+   * art/<animal-key>.png in the repo. Missing art falls back gracefully. */
+  function loadArt(key, cb) {
+    var img = new Image();
+    img.onload = function () { cb(img); };
+    img.onerror = function () { cb(null); };
+    img.src = "art/" + key + ".png";
+  }
+
+  function siteUrl() {
+    if (location.protocol === "http:" || location.protocol === "https:") return location.origin + location.pathname;
+    return "infovore";
+  }
+  function captionText(a, r) {
+    var loc = state.locale;
+    return fmt(t("share.caption"), {
+      animal: a.name[loc], pct: a.rarity,
+      blind: firstSentence(a.blindspot[loc], loc), url: siteUrl()
+    });
+  }
+  function copyCaption(a, r, btn) {
+    var text = captionText(a, r);
+    function done() { if (btn) { var old = btn.textContent; btn.textContent = t("share.copied"); setTimeout(function () { btn.textContent = old; }, 1600); } }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, done); }
+    else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta); done();
+    }
+  }
+
+  function buildCard(a, r, cb) {
     var loc = state.locale;
     var canvas = document.createElement("canvas");
     canvas.width = 1080; canvas.height = 1350;
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#f7f1e5"; ctx.fillRect(0, 0, 1080, 1350);
-    ctx.strokeStyle = "#b4551f"; ctx.lineWidth = 3; ctx.strokeRect(36, 36, 1008, 1278);
-    ctx.fillStyle = "#2b2620"; ctx.textAlign = "center";
+    ctx.strokeStyle = "#b4551f"; ctx.lineWidth = 3; ctx.strokeRect(30, 30, 1020, 1290);
+    ctx.textAlign = "center";
 
-    ctx.font = "600 34px Georgia, 'Songti SC', serif";
+    ctx.font = "600 32px Georgia, 'Songti SC', serif";
     ctx.fillStyle = "#b4551f";
-    ctx.fillText("infovore", 540, 150);
+    ctx.fillText("infovore", 540, 108);
 
     ctx.fillStyle = "#2b2620";
-    ctx.font = "700 120px Georgia, 'Songti SC', 'STSong', serif";
-    ctx.fillText(a.name[loc], 540, 330);
+    ctx.font = "700 104px Georgia, 'Songti SC', 'STSong', serif";
+    ctx.fillText(a.name[loc], 540, 228);
 
-    ctx.font = "italic 40px Georgia, 'Songti SC', serif";
+    ctx.font = "italic 36px Georgia, 'Songti SC', serif";
     ctx.fillStyle = "#7a6f5f";
-    ctx.fillText(a.name[otherLocale()], 540, 400);
+    ctx.fillText(a.name[otherLocale()], 540, 288);
 
-    ctx.font = "46px Georgia, 'Songti SC', serif";
-    ctx.fillStyle = "#2b2620";
-    var verdictLines = wrapText(ctx, firstSentence(a.verdict[loc], loc), 880, loc === "zh");
-    var y = 540;
-    verdictLines.slice(0, 3).forEach(function (ln) { ctx.fillText(ln, 540, y); y += 64; });
+    loadArt(r.animal, function (img) {
+      /* illustration zone: square 620x620, x 230..850, y 330..950 */
+      if (img) {
+        var side = Math.min(img.width, img.height);
+        ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 230, 330, 620, 620);
+      } else {
+        ctx.save();
+        ctx.strokeStyle = "#d8c9ae"; ctx.lineWidth = 2;
+        ctx.setLineDash([10, 10]);
+        ctx.strokeRect(230, 330, 620, 620);
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#e9dcc3";
+        ctx.beginPath(); ctx.arc(540, 640, 150, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#b4551f";
+        ctx.font = "700 150px Georgia, serif";
+        ctx.fillText(a.name.en.charAt(0), 540, 695);
+        ctx.restore();
+      }
 
-    ctx.font = "600 38px -apple-system, 'PingFang SC', sans-serif";
-    ctx.fillStyle = "#b4551f";
-    ctx.fillText(fmt(t("share.rarityLabel"), { pct: a.rarity }), 540, y + 60);
+      ctx.fillStyle = "#2b2620";
+      ctx.font = "44px Georgia, 'Songti SC', serif";
+      var verdictLines = wrapText(ctx, firstSentence(a.verdict[loc], loc), 880, loc === "zh");
+      var y = 1032;
+      verdictLines.slice(0, 2).forEach(function (ln) { ctx.fillText(ln, 540, y); y += 58; });
 
-    ctx.font = "38px Georgia, 'Songti SC', serif";
-    ctx.fillStyle = "#2b2620";
-    var blind = t("share.blindspotLabel") + (loc === "zh" ? "：" : ": ") + firstSentence(a.blindspot[loc], loc);
-    var blindLines = wrapText(ctx, blind, 880, loc === "zh");
-    var by = 1010;
-    blindLines.slice(0, 3).forEach(function (ln) { ctx.fillText(ln, 540, by); by += 56; });
+      ctx.font = "600 36px -apple-system, 'PingFang SC', sans-serif";
+      ctx.fillStyle = "#b4551f";
+      ctx.fillText(fmt(t("share.rarityLabel"), { pct: a.rarity }), 540, y + 42);
 
-    ctx.font = "30px Georgia, serif";
-    ctx.fillStyle = "#7a6f5f";
-    ctx.fillText(t("share.footer"), 540, 1245);
+      ctx.font = "33px Georgia, 'Songti SC', serif";
+      ctx.fillStyle = "#2b2620";
+      var blind = t("share.blindspotLabel") + (loc === "zh" ? "：" : ": ") + firstSentence(a.blindspot[loc], loc);
+      var blindLines = wrapText(ctx, blind, 880, loc === "zh");
+      var by = y + 108;
+      blindLines.slice(0, 2).forEach(function (ln) { ctx.fillText(ln, 540, by); by += 46; });
 
-    var link = document.createElement("a");
-    link.download = "infovore-" + r.animal + ".png";
-    link.href = canvas.toDataURL("image/png");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      ctx.font = "26px Georgia, serif";
+      ctx.fillStyle = "#7a6f5f";
+      ctx.fillText(t("share.footer"), 540, 1288);
+      cb(canvas);
+    });
+  }
+
+  function downloadCard(a, r) {
+    buildCard(a, r, function (canvas) {
+      var link = document.createElement("a");
+      link.download = "infovore-" + r.animal + ".png";
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
+
+  function systemShare(a, r) {
+    buildCard(a, r, function (canvas) {
+      var text = captionText(a, r);
+      if (navigator.canShare && canvas.toBlob) {
+        canvas.toBlob(function (blob) {
+          if (!blob) { downloadCard(a, r); return; }
+          var file = new File([blob], "infovore-" + r.animal + ".png", { type: "image/png" });
+          var payload = { files: [file], text: text };
+          if (navigator.canShare(payload)) { navigator.share(payload).catch(function () {}); return; }
+          if (navigator.share) { navigator.share({ text: text, url: siteUrl() }).catch(function () {}); return; }
+          downloadCard(a, r);
+        }, "image/png");
+      } else if (navigator.share) {
+        navigator.share({ text: text, url: siteUrl() }).catch(function () {});
+      } else { downloadCard(a, r); }
+    });
   }
 
   /* ---------- language toggle ---------- */
