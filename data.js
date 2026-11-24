@@ -85,6 +85,12 @@
         "title": "第一次探险",
         "start": "这就是你的第一探"
       },
+      "analysis": {
+        "title": "你的分析",
+        "actionsTitle": "本周行动单",
+        "keepIntro": "你的五维都很亮，这张单是用来守住这片亮的。",
+        "actedTag": "已行动"
+      },
       "share": {
         "blindspotLabel": "盲区",
         "rarityLabel": "稀有度 {pct}%",
@@ -172,6 +178,12 @@
       "expedition": {
         "title": "First expedition",
         "start": "This is your first expedition"
+      },
+      "analysis": {
+        "title": "Your analysis",
+        "actionsTitle": "This week's action list",
+        "keepIntro": "All five of your dimensions are bright — this list is for keeping them bright.",
+        "actedTag": "acted on"
       },
       "share": {
         "blindspotLabel": "Blind spot",
@@ -2651,6 +2663,159 @@
     }
   };
 
-  return { UI: UI, QUESTIONS: QUESTIONS, ANIMALS: ANIMALS,
+  var ANALYSIS = {
+  "breadth": {
+    "high": {
+      "zh": "你的食性很杂，主题、人群、媒介都跨得开。这是破茧最省力的底子——茧对你来说不是墙，是几扇还没推开的门。",
+      "en": "Your diet is genuinely varied — topics, people and media all span wide. That's the cheapest foundation for breaking out of a bubble: for you, the bubble isn't a wall, it's a few doors you haven't pushed open yet."
+    },
+    "mid": {
+      "zh": "你有几条固定的觅食路线，偶尔也会拐进小巷。广度不拖后腿，但你的地图上还有整片没去过的主题大陆。",
+      "en": "You have a few regular foraging routes, with occasional detours down side streets. Breadth isn't holding you back, but there are still whole topic continents on your map you've never visited."
+    },
+    "low": {
+      "zh": "你的信息世界很集中，几类内容占了绝大部分。这不是坏事——深耕需要集中——但代价是：你以为的「世界」其实只是你的那几条街。",
+      "en": "Your information world is concentrated — a few kinds of content take up most of it. That's not bad in itself; depth needs focus. But the cost is this: what you call \"the world\" is really just your few streets."
+    },
+    "actions": [
+      {
+        "zh": "这周关注一个你从没关注过的领域的账号，只看三天，三天后决定留不留。",
+        "en": "This week, follow one account in a field you've never followed, read it for three days, then decide whether to keep it."
+      },
+      {
+        "zh": "打开你常去的平台，主动搜一个你从没搜过的词，翻完前 10 条结果。",
+        "en": "Open the platform you use most, search a term you've never searched, and read through the first 10 results."
+      }
+    ],
+    "keep": {
+      "zh": "别让算法替你收窄——每月手动加一个「不一样的声音」。",
+      "en": "Don't let the algorithm narrow you — add one \"different voice\" by hand every month."
+    }
+  },
+  "depth": {
+    "high": {
+      "zh": "你肯花时间把一件事看到底：读完、查证、追到源头。这是全场最稀缺的能力，热闹带不走你。",
+      "en": "You're willing to see a thing through to the end — finish it, verify it, trace it to the source. That's the rarest ability in the room; hype can't carry you away."
+    },
+    "mid": {
+      "zh": "你会在感兴趣的东西上多停一会儿，但多数内容还是浅尝辄止。你的深度像潮水，来得看心情。",
+      "en": "You'll linger on things that interest you, but most content gets a taste and no more. Your depth comes and goes with the mood."
+    },
+    "low": {
+      "zh": "你吃信息像吃快餐：快、广、但很少停下来嚼。问题不在你没耐心——是你很少给任何东西一个「值得停下」的机会。",
+      "en": "You eat information like fast food: quick, broad, rarely chewed. The problem isn't impatience — it's that you rarely give anything a chance to be worth stopping for."
+    },
+    "actions": [
+      {
+        "zh": "从你的收藏夹里捞出存得最久的一篇，今天把它真读完，读完写一句话：它到底讲了什么。",
+        "en": "Pull the oldest item from your saved list and actually finish it today; then write one sentence: what did it actually say?"
+      },
+      {
+        "zh": "下次读到一个让你「原来如此」的结论，花 5 分钟查它的原始来源，看它到底从哪来。",
+        "en": "Next time a conclusion makes you go \"ah, so that's it,\" spend 5 minutes tracing it to its original source."
+      }
+    ],
+    "keep": {
+      "zh": "深是你的护城河，但记得定期浮上来透口气，看看水面变了什么。",
+      "en": "Depth is your moat — but surface regularly to see what changed up top."
+    }
+  },
+  "novelty": {
+    "high": {
+      "zh": "陌生的东西吓不到你，你甚至有点喜欢被新东西撞一下。这是天生的破茧体质，别浪费它。",
+      "en": "The unfamiliar doesn't scare you — you even enjoy being bumped by something new. That's a born bubble-breaking constitution. Don't waste it."
+    },
+    "mid": {
+      "zh": "新东西你不排斥，但要先看它「像不像我认识的东西」才肯靠近。你的好奇心需要一座桥。",
+      "en": "You don't reject new things, but you first check whether they resemble something you already know. Your curiosity needs a bridge."
+    },
+    "low": {
+      "zh": "你对陌生内容的本能反应是划走。这不是封闭，是大脑在省电——但省电省久了，世界就只剩你家门口那一小圈。",
+      "en": "Your instinct with unfamiliar content is to swipe past. That's not closed-mindedness — it's your brain saving energy. But save energy long enough, and the world shrinks to your own doorstep."
+    },
+    "actions": [
+      {
+        "zh": "今天点开一个你平时绝不会点的题材，看满 5 分钟再决定走不走。",
+        "en": "Today, open one topic you'd normally never tap, and give it a full 5 minutes before deciding to leave."
+      },
+      {
+        "zh": "去一个和你行业完全无关的讲座或展览，哪怕只待 20 分钟。",
+        "en": "Go to a talk or exhibition totally unrelated to your field, even if you only stay 20 minutes."
+      }
+    ],
+    "keep": {
+      "zh": "新奇是你的燃料，记得留一点给「旧东西的新看法」。",
+      "en": "Novelty is your fuel — save some of it for new views of old things."
+    }
+  },
+  "dissent": {
+    "high": {
+      "zh": "你能把反对自己的话听完，而且听得进去。这不是没立场，是立场经得起风——全场最难得的一种耐受。",
+      "en": "You can hear out the people who disagree with you — and actually take it in. That's not having no position; it's a position that can stand wind. The rarest tolerance in the room."
+    },
+    "mid": {
+      "zh": "反对的声音你能看，但大多是为了找它的漏洞。听完了，不等于听进去了——你的耳朵开着，门还半掩着。",
+      "en": "You can read dissenting voices, but mostly to find their holes. Hearing them out isn't the same as taking them in — your ears are open, the door only half so."
+    },
+    "low": {
+      "zh": "和你观点不同的内容，你基本不看，或者看了就关。你不是在保护观点，是在保护心情——但茧最厚的地方，往往就是这里。",
+      "en": "Content that disagrees with you, you mostly don't read — or close at once. You're not protecting your view; you're protecting your mood. But the thickest part of the bubble is usually right here."
+    },
+    "actions": [
+      {
+        "zh": "找一篇你反对的文章，只做一件事：把它的核心论点复述到支持它的人会点头说「对，就是这个意思」为止。",
+        "en": "Find an article you disagree with and do one thing only: restate its core argument until a supporter would nod and say \"yes, that's exactly it.\""
+      },
+      {
+        "zh": "这周在一个你不同意的群里，先不发言，只看三天，记下群里说得最有道理的一句话。",
+        "en": "This week, in a group where you disagree, say nothing for three days — just watch, and write down the single most reasonable sentence anyone says there."
+      }
+    ],
+    "keep": {
+      "zh": "听得进反对意见的人，最容易被「什么都懂一点」绊住——定期为一个立场站一次队。",
+      "en": "People who hear dissent well get tripped by \"knowing a little of everything\" — take a stand on something, on a schedule."
+    }
+  },
+  "reach": {
+    "high": {
+      "zh": "你的关心半径很大：远方、过去、未来、陌生人，都在你的视野里。这是候鸟和深海鲸的共同点——世界对你来说是真的很大。",
+      "en": "Your radius of concern is wide: faraway places, the past, the future, strangers — all in view. That's what migrant birds and deep-sea whales share: the world is genuinely big to you."
+    },
+    "mid": {
+      "zh": "远方你关心，但只关心「大事件」里的远方。远方的普通人过着什么日子，你很少想起。",
+      "en": "You care about the faraway, but mostly the faraway inside big events. How ordinary people live far away rarely crosses your mind."
+    },
+    "low": {
+      "zh": "你的世界基本就是身边这一圈：本地、熟人、今天。不是你不关心远方，是远方在你的信息流里根本没有一个入口。",
+      "en": "Your world is basically the circle around you: local, familiar, today. It's not that you don't care about the faraway — it's that the faraway has no door into your feed at all."
+    },
+    "actions": [
+      {
+        "zh": "关注一个外国城市的本地媒体账号，只看三天，看看那里的人今天在为什么事烦恼。",
+        "en": "Follow a local news account from a foreign city for three days, and see what people there are worrying about today."
+      },
+      {
+        "zh": "找一个职业离你很远的人（渔民、法医、夜班司机都行），看一篇讲他一天的文章或视频。",
+        "en": "Find one article or video about a day in the life of someone whose job is far from yours — a fisher, a forensic examiner, a night-shift driver."
+      }
+    ],
+    "keep": {
+      "zh": "远方看得清的人，最容易忘了低头——每月留一天给身边和本地。",
+      "en": "People who see far clearly forget to look down — keep one day a month for the nearby and the local."
+    }
+  },
+  "templates": {
+    "strongest": {
+      "zh": "你的{dim}是全场最亮的一盏灯（{score} 分）。这是你的底气——破茧不是从零开始，你已经有了一块高地。",
+      "en": "Your {dim} is the brightest light in the room ({score}). That's your strong ground — breaking out doesn't start from zero; you already hold high ground."
+    },
+    "weakest": {
+      "zh": "你的{dim}是最薄的一处（{score} 分）。这不是你的短板，是你的下一个入口——地图上雾最浓的地方，往往就是最好玩的地方。",
+      "en": "Your {dim} is the thinnest spot ({score}). That's not a weakness — it's your next entrance. The foggiest part of the map is usually where the fun is."
+    }
+  }
+};
+
+  return { UI: UI, QUESTIONS: QUESTIONS, ANIMALS: ANIMALS, ANALYSIS: ANALYSIS,
            DIMENSIONS: ["breadth", "depth", "novelty", "dissent", "reach"] };
 });

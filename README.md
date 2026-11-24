@@ -97,3 +97,8 @@ The site loads each illustration automatically on the result page and the share 
 
 分享 / Sharing：结果页提供系统分享（移动端分享面板，带图带配文）、下载分享卡（1080×1350 PNG）、复制配文（中英双语模板，含动物名、稀有度、盲区与站点链接）三个动作。
 The result page offers system share (mobile share sheet, image + caption), share-card download (1080×1350 PNG), and copy-caption (bilingual template with animal, rarity, blind spot, and site URL).
+
+## 测后分析与行动单 / Post-test analysis & action list
+
+结果页按用户自己的五维分数拼装（文案全文见 ANALYSIS.md）：每维按高/中/低档给一段解读；自动评出最强维与最弱维；再按最低的两个维度拼出 3 条「本周行动单」（全高时改为「守成单」）。行动可打勾，只存本机（`infovore.actions`），打勾后对应地图区域会亮一点。
+The result page assembles analysis from the user's own five scores (full copy in ANALYSIS.md): a per-dimension interpretation by band, strongest/weakest verdicts, and a 3-item weekly action list from the two lowest dimensions (a "keep it bright" list when all are high). Actions can be ticked off — stored locally only — and ticking one brightens the matching map region.

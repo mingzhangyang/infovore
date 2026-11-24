@@ -120,3 +120,11 @@ main { max-width: 720px; margin: 0 auto; padding: 12px 20px 40px; }
 .animal-art img { width: 100%; height: auto; display: block; border-radius: 18px; }
 .animal-art:not(.has-art) { display: none; }
 .actions { flex-wrap: wrap; }
+
+.dim-note { margin: 2px 0 12px; color: #6b6154; font-size: 14.5px; line-height: 1.65; }
+.analysis-line { line-height: 1.75; margin: 8px 0; }
+.action-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.action-item { display: flex; gap: 10px; align-items: flex-start; background: #fbf7ee; border: 1px solid #e7dcc6; border-radius: 12px; padding: 12px 14px; cursor: pointer; line-height: 1.6; }
+.action-item input { margin-top: 5px; width: 17px; height: 17px; accent-color: #b4551f; flex: none; }
+.action-item input:checked + span { color: #8a7f6e; text-decoration: line-through; }
+.map-row.acted .map-name { color: #b4551f; }

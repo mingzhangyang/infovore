@@ -7,6 +7,7 @@
   var UI = window.INFOVORE.UI;
   var QUESTIONS = window.INFOVORE.QUESTIONS;
   var ANIMALS = window.INFOVORE.ANIMALS;
+  var ANALYSIS = window.INFOVORE.ANALYSIS;
   var DIMS = window.INFOVORE.DIMENSIONS; // breadth, depth, novelty, dissent, reach
 
   /* ---------- scoring (kept in sync with test.mjs) ---------- */
@@ -214,11 +215,45 @@
     return "fog";
   }
 
+  /* ---------- post-test analysis & action list (SPEC: analysis draft v1) ---------- */
+  function bandOf(v) { return v >= 65 ? "high" : v >= 45 ? "mid" : "low"; }
+  function sortedDims(scores, asc) {
+    return DIMS.slice().sort(function (x, y) {
+      var d = asc ? scores[x] - scores[y] : scores[y] - scores[x];
+      return d !== 0 ? d : DIMS.indexOf(x) - DIMS.indexOf(y);
+    });
+  }
+  function actionListFor(r) {
+    var order = sortedDims(r.scores, true); // lowest first
+    var lowest = order[0], second = order[1];
+    var items = [];
+    if (r.scores[lowest] >= 65) {
+      var strongest = sortedDims(r.scores, false)[0];
+      [lowest, second, strongest].forEach(function (d) {
+        items.push({ dim: d, kind: "keep", idx: 0, text: ANALYSIS[d].keep });
+      });
+      return { keep: true, items: items };
+    }
+    items.push({ dim: lowest, kind: "act", idx: 0, text: ANALYSIS[lowest].actions[0] });
+    items.push({ dim: lowest, kind: "act", idx: 1, text: ANALYSIS[lowest].actions[1] });
+    items.push({ dim: second, kind: "act", idx: 0, text: ANALYSIS[second].actions[0] });
+    return { keep: false, items: items };
+  }
+  function actionId(r, it) { return r.ts + ":" + it.dim + ":" + it.kind + ":" + it.idx; }
+  function loadDone() {
+    try { return JSON.parse(localStorage.getItem("infovore.actions") || "{}"); } catch (e) { return {}; }
+  }
+  function saveDone(d) { try { localStorage.setItem("infovore.actions", JSON.stringify(d)); } catch (e) {} }
+
   function renderResult() {
     var r = state.result;
     if (!r) { renderIntro(); return; }
     var a = ANIMALS[r.animal];
     var loc = state.locale;
+    var list = actionListFor(r);
+    var doneMap = loadDone();
+    var actedDims = [];
+    list.items.forEach(function (it) { if (doneMap[actionId(r, it)] && actedDims.indexOf(it.dim) < 0) actedDims.push(it.dim); });
     var html = "";
     html += '<div class="result-head"><div class="you-are">' + esc(t("result.youAre")) + "</div>";
     html += "<h1>" + esc(a.name[loc]) + "</h1>";
@@ -236,8 +271,15 @@
       html += '<div class="dim-row"><span>' + esc(t("dims." + d)) + '</span>' +
         '<span class="dim-track"><span class="dim-fill" style="display:block;width:' + v + '%"></span></span>' +
         '<span class="dim-val">' + v + "</span></div>";
+      html += '<p class="dim-note">' + esc(ANALYSIS[d][bandOf(v)][loc]) + "</p>";
     });
     html += "</div>";
+
+    /* analysis: strongest / weakest verdicts */
+    var desc = sortedDims(r.scores, false), asc = sortedDims(r.scores, true);
+    html += '<div class="card"><h2>' + esc(t("analysis.title")) + "</h2>";
+    html += '<p class="analysis-line">' + esc(fmt(ANALYSIS.templates.strongest[loc], { dim: t("dims." + desc[0]), score: r.scores[desc[0]] })) + "</p>";
+    html += '<p class="analysis-line">' + esc(fmt(ANALYSIS.templates.weakest[loc], { dim: t("dims." + asc[0]), score: r.scores[asc[0]] })) + "</p></div>";
 
     html += '<div class="card"><h2>' + esc(t("map.title")) + "</h2>";
     html += '<p class="note">' + esc(t("map.hint")) + "</p>";
@@ -245,15 +287,25 @@
       var v = r.scores[d];
       var st = mapState(v);
       var label = st === "lit" ? t("map.lit") : st === "half" ? t("map.half") : t("map.fog");
-      html += '<div class="map-row state-' + st + '"><div class="map-top"><span class="map-name">' +
-        esc(t("map.regions." + d + ".name")) + '</span><span class="map-state">' + esc(label) + " · " + v + "</span></div>" +
+      var acted = actedDims.indexOf(d) >= 0;
+      html += '<div class="map-row state-' + st + (acted ? " acted" : "") + '"><div class="map-top"><span class="map-name">' +
+        esc(t("map.regions." + d + ".name")) + '</span><span class="map-state">' + esc(label) + " · " + v + (acted ? " · " + esc(t("analysis.actedTag")) : "") + "</span></div>" +
         '<p class="map-desc">' + esc(t("map.regions." + d + ".desc")) + "</p>" +
-        '<div class="map-meter"><i style="width:' + Math.max(v, 3) + '%"></i></div></div>';
+        '<div class="map-meter"><i style="width:' + Math.min(100, Math.max(v, 3) + (acted ? 10 : 0)) + '%"></i></div></div>';
     });
     html += '<p style="margin-top:14px"><strong>' + esc(t("map.shapeTitle")) + "：</strong>" + esc(a.map_shape[loc]) + "</p>";
     html += "</div>";
 
     html += '<div class="card"><h2>' + esc(t("result.firstStepTitle")) + "</h2><p>" + esc(a.first_step[loc]) + "</p></div>";
+
+    html += '<div class="card"><h2>' + esc(t("analysis.actionsTitle")) + "</h2>";
+    if (list.keep) html += '<p class="note">' + esc(t("analysis.keepIntro")) + "</p>";
+    html += '<div class="action-list">';
+    list.items.forEach(function (it) {
+      var id = actionId(r, it);
+      html += '<label class="action-item"><input type="checkbox" data-action="' + esc(id) + '"' + (doneMap[id] ? " checked" : "") + "><span>" + esc(it.text[loc]) + "</span></label>";
+    });
+    html += "</div></div>";
 
     html += '<div class="actions"><button class="btn" id="btn-share-system">' + esc(t("share.system")) + "</button>" +
       '<button class="btn secondary" id="btn-share">' + esc(t("result.share")) + "</button>" +
@@ -269,6 +321,16 @@
     document.getElementById("btn-share-system").addEventListener("click", function () { systemShare(a, r); });
     document.getElementById("btn-copy").addEventListener("click", function (ev) { copyCaption(a, r, ev.target); });
     document.getElementById("btn-retake").addEventListener("click", startQuiz);
+    views.result.querySelectorAll("input[data-action]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var d = loadDone();
+        if (cb.checked) d[cb.getAttribute("data-action")] = 1; else delete d[cb.getAttribute("data-action")];
+        saveDone(d);
+        var y = window.scrollY;
+        renderResult();
+        window.scrollTo(0, y);
+      });
+    });
   }
 
   /* ---------- share card: 1080 x 1350 canvas PNG ---------- */

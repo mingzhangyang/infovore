@@ -4,7 +4,7 @@
  */
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const { UI, QUESTIONS, ANIMALS, DIMENSIONS } = require("./data.js");
+const { UI, QUESTIONS, ANIMALS, ANALYSIS, DIMENSIONS } = require("./data.js");
 
 let failures = 0;
 function assert(cond, msg) {
@@ -127,6 +127,31 @@ const frogAnswers = [
 const frog = computeResult(frogAnswers);
 console.log("  frog set scores:", JSON.stringify(frog.scores), "near:", frog.near);
 assert(frog.animal === "frog_scholar", `hand-built deep/narrow set yields frog_scholar (got ${frog.animal})`);
+
+
+console.log("analysis module:");
+assert(!!ANALYSIS, "ANALYSIS present");
+for (const d of DIMENSIONS) {
+  const a = ANALYSIS[d] || {};
+  for (const band of ["high", "mid", "low"]) {
+    assert(a[band] && a[band].zh && a[band].en, `analysis ${d}.${band} bilingual`);
+  }
+  assert(Array.isArray(a.actions) && a.actions.length === 2 && a.actions.every(x => x.zh && x.en), `analysis ${d} has 2 bilingual actions`);
+  assert(a.keep && a.keep.zh && a.keep.en, `analysis ${d}.keep bilingual`);
+}
+assert(ANALYSIS.templates.strongest.zh.includes("{dim}") && ANALYSIS.templates.strongest.en.includes("{score}"), "strongest template placeholders");
+assert(ANALYSIS.templates.weakest.zh.includes("{score}") && ANALYSIS.templates.weakest.en.includes("{dim}"), "weakest template placeholders");
+/* action-list assembly, replicated from app.js */
+function actionListFor(scores) {
+  const sorted = [...DIMENSIONS].sort((x, y) => scores[x] - scores[y] || DIMENSIONS.indexOf(x) - DIMENSIONS.indexOf(y));
+  const [lowest, second] = sorted;
+  if (scores[lowest] >= 65) return { keep: true, items: [lowest, second, [...DIMENSIONS].sort((x, y) => scores[y] - scores[x])[0]] };
+  return { keep: false, items: [lowest, lowest, second] };
+}
+const lopsided = actionListFor({ breadth: 10, depth: 90, novelty: 50, dissent: 50, reach: 30 });
+assert(!lopsided.keep && lopsided.items.join() === "breadth,breadth,reach", "action list: lowest x2 + second-lowest x1");
+const allHigh = actionListFor({ breadth: 90, depth: 80, novelty: 70, dissent: 85, reach: 95 });
+assert(allHigh.keep && allHigh.items.length === 3, "action list: all-high becomes keep list of 3");
 
 console.log(failures === 0 ? "\nALL TESTS PASSED" : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);
