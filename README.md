@@ -87,10 +87,10 @@ Only when a real need appears, add a separate standalone Worker — the static s
 每只动物一张方形插画，由 MZ 制作，放入 repo 的 `art/` 目录，命名严格对应动物 key：
 One square illustration per animal, made by MZ, placed in the repo's `art/` folder, named exactly by animal key:
 
-`art/whale.png` · `art/hummingbird.png` · `art/owl.png` · `art/fox.png` · `art/ant.png` · `art/migrant.png` · `art/frog_scholar.png` · `art/otter.png`
+`art/whale.webp` · `art/hummingbird.webp` · `art/owl.webp` · `art/fox.webp` · `art/ant.webp` · `art/migrant.webp` · `art/frog_scholar.webp` · `art/otter.webp`
 
-规格 / Spec：正方形，建议 1600×1600（不小于 1000×1000），主体居中、四边留白，背景安静（卡面文字区在插画之外，不压图）。
-Square, 1600×1600 recommended (min 1000×1000), subject centered with margins, quiet background (card text lives outside the illustration).
+规格 / Spec：WebP，正方形，当前为 1254×1254，主体居中、四边留白，背景安静（卡面文字区在插画之外，不压图）。PNG 原稿存放在 repo 之外，不作为运行时素材追踪。
+WebP, square, currently 1254×1254, subject centered with margins, quiet background (card text lives outside the illustration). PNG masters are archived outside the repo and are not tracked as runtime assets.
 
 站点会自动在结果页与分享卡中加载对应插画；缺图时自动回退为排版占位，不报错、不用等齐 8 张。
 The site loads each illustration automatically on the result page and the share card; missing art falls back to a typographic placeholder — no need to wait for all 8.

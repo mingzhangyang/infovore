@@ -363,18 +363,13 @@
     return lines;
   }
 
-  /* Art convention: MZ supplies one square illustration per animal in the
-   * repo's art/ folder. WebP is preferred (~87% smaller); PNG is the
-   * fallback when no WebP exists yet. Missing art falls back gracefully. */
+  /* Art convention: MZ supplies one square WebP illustration per animal
+   * in the repo's art/ folder. PNG masters are archived outside the repo.
+   * Missing art falls back gracefully. */
   function loadArt(key, cb) {
     var img = new Image();
     img.onload = function () { cb(img); };
-    img.onerror = function () {
-      var png = new Image();
-      png.onload = function () { cb(png); };
-      png.onerror = function () { cb(null); };
-      png.src = "art/" + key + ".png";
-    };
+    img.onerror = function () { cb(null); };
     img.src = "art/" + key + ".webp";
   }
 
